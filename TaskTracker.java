@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.util.Arrays;
 
 
 public class TaskTracker {
@@ -8,7 +9,7 @@ public class TaskTracker {
     public static void main(String[] args) {
         System.out.println("Welcome to Task Tracker App");
         System.out.println("Please type help to get the user guide");
-        Scanner in = new Scanner(System.in);
+        System.out.println("Arguments: " + Arrays.toString(args));
 
     }
 
