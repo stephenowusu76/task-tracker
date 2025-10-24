@@ -61,7 +61,13 @@ public class TaskTracker {
     private static void add(String title) {
         File file = new File("/Users/stephenowusu/dev/java/projects/task-tracker/","db.json");
         ObjectMapper task = new ObjectMapper();
-        Task currTask = new Task();
+        List<Task> taskList = objectMapper.readValue(file, new TypeReference<List<Task>>(){});
+        int currCount = taskList.size();
+        Task currTask = new Task(currCount+1, title, "todo",);
+        taskList.add(currTask);
+
+        objectMapper.writeValue(new File("target/car.json"), car);
+
 
     }
 
