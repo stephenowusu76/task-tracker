@@ -2,18 +2,27 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.io.IOException;
 
 public class TaskTracker {
-    public class Task {
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final String DB_PATH = "/Users/stephenowusu/dev/java/projects/task-tracker/db.json";
+
+    public static class Task {
         public int id;
         public String description;
         public String status;
-        public LocalDateTime createdAt;
-        public LocalDateTime updatedAt;
+        public String createdAt;
+        public String updatedAt;
+        public Task() {}
         public Task(int id, String description, String status){
-            LocalDateTime currTime = LocalDateTime.now();
+            String currTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));;
             this.id=id;
             this.description=description;
             this.status=status;
@@ -21,12 +30,12 @@ public class TaskTracker {
             this.updatedAt=currTime;
         }
     }
-    private static int count = 1;
+
     public static void main(String[] args) {
         System.out.println("Welcome to Task Tracker App");
         System.out.println("Please type help to get the user guide");
         System.out.println("Arguments: " + Arrays.toString(args));
-        String action = args[0] ? Null;
+        String action = args[0]; // to do add try catch here
         File file = new File("/Users/stephenowusu/dev/java/projects/task-tracker/tasks.json");
         ObjectMapper test1 = new ObjectMapper();
 
@@ -59,16 +68,20 @@ public class TaskTracker {
     }
 
     private static void add(String title) {
-        File file = new File("/Users/stephenowusu/dev/java/projects/task-tracker/","db.json");
-        ObjectMapper task = new ObjectMapper();
-        List<Task> taskList = objectMapper.readValue(file, new TypeReference<List<Task>>(){});
-        int currCount = taskList.size();
-        Task currTask = new Task(currCount+1, title, "todo",);
-        taskList.add(currTask);
+        try {
+            File file = new File("/Users/stephenowusu/dev/java/projects/task-tracker/", "db.json");
 
-        objectMapper.writeValue(new File("target/car.json"), car);
-
-
+            List<Task> taskList = file.exists() ? MAPPER.readValue(file, new TypeReference<List<Task>>() {
+            }) : new ArrayList<>();
+            int currCount = taskList.size();
+            Task currTask = new Task(currCount + 1, title, "todo");
+            taskList.add(currTask);
+            MAPPER.writeValue(new File("/Users/stephenowusu/dev/java/projects/task-tracker/db.json"), taskList);
+            System.out.println("Task added : " + title);
+        } catch (IOException e){
+            System.out.print(e);
+            System.err.println("Failed to add : " + title);
+        }
     }
 
     private static void update(String id, String title) {
