@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class TaskTracker {
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final String DB_PATH = "/Users/stephenowusu/dev/java/projects/task-tracker/db.json";
+    private static final String DB_PATH = "/Users/stephen.owusu/personal/task-tracker/db.json";
 
     public static class Task {
         public int id;
@@ -22,12 +22,22 @@ public class TaskTracker {
         public String updatedAt;
         public Task() {}
         public Task(int id, String description, String status){
-            String currTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));;
+            String currTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             this.id=id;
             this.description=description;
             this.status=status;
             this.createdAt=currTime;
             this.updatedAt=currTime;
+        }
+
+        @Override
+        public String toString(){
+            return new StringBuilder()
+                .append(id).append(" ")
+                .append(description).append(" ")
+                .append(status).append(" ")
+                .append(createdAt).append(" ")
+                .append(updatedAt).toString();
         }
     }
 
@@ -36,8 +46,6 @@ public class TaskTracker {
         System.out.println("Please type help to get the user guide");
         System.out.println("Arguments: " + Arrays.toString(args));
         String action = args[0]; // to do add try catch here
-        File file = new File("/Users/stephenowusu/dev/java/projects/task-tracker/tasks.json");
-        ObjectMapper test1 = new ObjectMapper();
 
         switch(action){
             case "add":
@@ -50,7 +58,11 @@ public class TaskTracker {
                 delete(args[1]);
                 break;
             case "list":
-                list(args[1]);
+                if(args[1])==null){
+                    list();
+                } else {
+                    list(args[1]);
+                }
                 break;
             default:
                 help();
@@ -71,7 +83,7 @@ public class TaskTracker {
         try {
             File file = new File("/Users/stephenowusu/dev/java/projects/task-tracker/", "db.json");
 
-            List<Task> taskList = file.exists() ? MAPPER.readValue(file, new TypeReference<List<Task>>() {
+            List<Task> taskList = file.exists() ? new MAPPER.readValue(file, new TypeReference<ArrayList<Task>>() {
             }) : new ArrayList<>();
             int currCount = taskList.size();
             Task currTask = new Task(currCount + 1, title, "todo");
@@ -85,14 +97,95 @@ public class TaskTracker {
     }
 
     private static void update(String id, String title) {
-
+        try {
+            File file = new File("/Users/stephenowusu/dev/java/projects/task-tracker/", "db.json");
+            List<Task> taskList;
+            if (file.exists()){
+                taskList = MAPPER.readValue(file, new TypeReference<ArrayList<Task>>() {});
+            } else {
+                System.out.println("No tasks to update");
+                return;
+            }
+            int index = Integer.parseInt(id);
+            Task updateTask = taskList[index];
+            if(updateTask.id == index){
+                updateTask.description = title;
+                updateTask.updatedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            } else {
+                System.out.println("Id mismatch issue");
+                return;
+            }
+            MAPPER.writeValue(new File(DB_PATH), taskList);
+            System.out.println("Task updated : " + title);
+        } catch (IOException e){
+            System.out.print(e);
+            System.err.println("Failed to update : " + title);
+        }
     }
 
     private static void delete(String id) {
-
+        try {
+            File file = new File("/Users/stephenowusu/dev/java/projects/task-tracker/", "db.json");
+            List<Task> taskList;
+            if (file.exists()){
+                taskList = MAPPER.readValue(file, new TypeReference<ArrayList<Task>>() {});
+            } else {
+                System.out.println("No tasks to delete");
+                return;
+            }
+            int index = Integer.parseInt(id);
+            Task updateTask = taskList[index];
+            if(updateTask.id == index){
+                taskList.remove(index);
+            } else {
+                System.out.println("Id mismatch issue");
+                return;
+            }
+            MAPPER.writeValue(new File(DB_PATH), taskList);
+            System.out.println("Task deleted : " + id);
+        } catch (IOException e){
+            System.out.print(e);
+            System.err.println("Failed to delete : " + id);
+        }
     }
 
-    private static void list(String id) {
+    private static void list() {
+        try {
+            File file = new File("/Users/stephenowusu/dev/java/projects/task-tracker/", "db.json");
+            List<Task> taskList;
+            if (file.exists()){
+                taskList = MAPPER.readValue(file, new TypeReference<ArrayList<Task>>() {});
+            } else {
+                System.out.println("No tasks to list");
+                return;
+            }
+            for(Task currTask : taskList){
+                System.out.println(currTask.toString());
+            }
+        } catch (IOException e){
+            System.out.print(e);
+            System.err.println("Failed to list tasks");
+        }
+    }
 
+    private static void list(String status) {
+        try {
+            File file = new File("/Users/stephenowusu/dev/java/projects/task-tracker/", "db.json");
+            List<Task> taskList;
+            if (file.exists()){
+                taskList = MAPPER.readValue(file, new TypeReference<ArrayList<Task>>() {});
+            } else {
+                System.out.println("No tasks to list");
+                return;
+            }
+            for(Task currTask : taskList){
+                if(currTask.status==status){
+                    System.out.println(currTask.toString());
+                }
+            }
+        } catch (IOException e){
+            System.out.print(e);
+            System.err.println("Failed to list tasks in" + status);
+        }
     }
 }
