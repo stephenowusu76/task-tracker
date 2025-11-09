@@ -9,3 +9,4 @@ https://roadmap.sh/projects/task-tracker
 ````sdk use java 21-tem````
 - ensure that the ```$PATH``` contains the path to the ``bin`` directory, save it in the ``~/.zshrc`` file eg ``export PATH="/Users/stephen.owusu/personal/task-tracker/bin:$PATH"``
 - ensure that the ``task-cli`` file is executable by running ``chmod +x task-cli``
+- how to compile the code `` javac -cp "lib/*:." TaskTracker.java ``

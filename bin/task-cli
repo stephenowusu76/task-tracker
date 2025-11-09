@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # update the class path based on the path to the program on your local machine
-CP="/Users/stephen.owusu/personal/task-tracker/"
+CP="/Users/stephenowusu/dev/java/projects/task-tracker/"
 PG="TaskTracker"
 
 # run the program with the inputs
-"$JAVA_HOME"/bin/java -cp "$CP" "$PG" "$@"
+/usr/bin/java -cp "$CP/lib/*:$CP" "$PG" "$@"
